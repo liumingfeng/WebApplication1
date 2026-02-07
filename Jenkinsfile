@@ -6,7 +6,7 @@ pipeline {
         PUBLISH_DIR = '.\\publish' 
     }
     stages {
-        stage('拉取代码') {
+        stage('Pull code') {
             steps {
                 echo 'clean up working folder old files...'
                 bat 'del /f /s /q *.* && for /d %%i in (*) do rd /s /q %%i'
