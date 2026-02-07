@@ -1,4 +1,4 @@
-﻿pipeline {
+pipeline {
     agent any
     environment {
         DOTNET_VERSION = '10.0'  // 替换为你的.NET版本（6/7/8）
