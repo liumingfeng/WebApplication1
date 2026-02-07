@@ -2,16 +2,14 @@ pipeline {
     agent any
     environment {
         DOTNET_VERSION = '10.0'  
-        PROJECT_FILE = 'WebApplication1.csproj' 
+        PROJECT_FILE = 'WebApplication1.slnx' 
         PUBLISH_DIR = '.\\publish' 
     }
     stages {
-        stage('Pull code') {
+        stage('Clean up code') {
             steps {
                 echo 'clean up working folder old files...'
-                bat 'del /f /s /q *.* && for /d %%i in (*) do rd /s /q %%i'
-                
-                echo 'get source code happend in Jenkins'
+                bat 'if exist %PUBLISH_DIR% rd /s /q %PUBLISH_DIR%'
             }
         }
 
