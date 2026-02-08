@@ -1,49 +1,51 @@
 pipeline {
     agent any
     environment {
-        DOTNET_VERSION = '10.0'  
-        PROJECT_FILE = 'WebApplication1.slnx' 
-        PUBLISH_DIR = '.\\publish' 
+        // ====================== 你只改这里 2 个 ======================
+        PROJECT_NAME = "WebApplication1"  // 你的ASP.NET Core项目名（csproj文件名）
+        PUBLISH_DIR = "${WORKSPACE}\\publish"  // Jenkins发布目录（自动生成）
+        // ==========================================================
     }
+
     stages {
-        stage('Clean up code') {
+        // 1. 拉取代码（本地Git/远程Git都可）
+        stage('拉取代码') {
             steps {
-                echo 'clean up working folder old files...'
-                bat 'if exist %PUBLISH_DIR% rd /s /q %PUBLISH_DIR%'
+                // 本地Git示例（替换成你的Git地址）
+                git url: "https://github.com/liumingfeng/WebApplication1.git", branch: "master"
             }
         }
 
-        stage('Restore NuGet') {
+        // 2. 还原NuGet依赖
+        stage('还原依赖') {
             steps {
-                echo 'start Restore NuGet...'
-                bat "dotnet restore ${PROJECT_FILE} --verbosity normal"
+                bat "dotnet restore ${PROJECT_NAME}.csproj"
             }
         }
 
-        stage('build project') {
+        // 3. 编译并发布
+        stage('编译发布') {
             steps {
-                echo 'start build project'
-                bat "dotnet build ${PROJECT_FILE} -c Release --no-restore"
+                bat "dotnet publish ${PROJECT_NAME}.csproj -c Release -o ${PUBLISH_DIR}"
             }
         }
 
-        stage('publish project') {
+        // 4. 调用WSL2里的Ansible部署到IIS
+        stage('Ansible部署到IIS') {
             steps {
-                echo 'start publish project'
-                bat "dotnet publish ${PROJECT_FILE} -c Release -o ${PUBLISH_DIR} --no-build"
-                
-                echo 'publish finished'
-                bat 'dir %PUBLISH_DIR%'
+                // 核心：调用WSL2中的Ansible执行剧本
+                bat "wsl ansible-playbook /mnt/c/ansible/deploy_iis.yml"
             }
         }
     }
 
+    // 部署结果提示
     post {
         success {
-            echo "Success .NET Core published to ${WORKSPACE}\\${PUBLISH_DIR}"
+            echo "✅ 部署成功！可访问 http://localhost:81/WebApplication1/WeatherForecast"
         }
         failure {
-            echo "Failed please see logs"
+            echo "❌ 部署失败！请检查日志"
         }
     }
 }
