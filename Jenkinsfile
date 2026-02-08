@@ -23,9 +23,7 @@ pipeline {
         stage('Ansible deploy to IIS') {
             steps {
                 bat """
-                    # 先确保WSL启动
                     wsl --distribution ${WSL_DISTRO_NAME} --exec echo "WSL started"
-                    # 执行Ansible剧本
                     wsl --distribution ${WSL_DISTRO_NAME} ansible-playbook /mnt/c/ansible/deploy_iis.yml
                 """
             }
