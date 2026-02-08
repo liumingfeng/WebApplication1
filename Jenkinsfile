@@ -16,7 +16,7 @@ pipeline {
 
         stage('build code') {
             steps {
-                bat "rd /s /q ${PUBLISH_DIR} || echo PUBLISH_DIR does not exist"
+                bat "rd /s /q ${PUBLISH_DIR} || echo PUBLISH_DIR_NOT_EXIST"
                 bat "dotnet publish ${PROJECT_NAME}.csproj -c Release -o ${PUBLISH_DIR}"
             }
         }
