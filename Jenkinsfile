@@ -6,13 +6,8 @@ pipeline {
     }
 
     stages {
-        stage('pull code') {
-            steps {
-                git url: "https://github.com/liumingfeng/WebApplication1.git", branch: "master"
-            }
-        }
 
-        stage('restore code') {
+        stage('restore packages') {
             steps {
                 bat "dotnet restore ${PROJECT_NAME}.csproj"
             }
@@ -26,14 +21,19 @@ pipeline {
 
         stage('Ansible deploy to IIS') {
             steps {
-                bat "wsl ansible-playbook /mnt/c/ansible/deploy_iis.yml"
+                bat """
+                    # 先确保WSL启动
+                    wsl --distribution Ubuntu-22.04 --exec echo "WSL started"
+                    # 执行Ansible剧本
+                    wsl ansible-playbook /mnt/c/ansible/deploy_iis.yml
+                """
             }
         }
     }
 
     post {
         success {
-            echo "Deploy success"
+            echo "Deploy success: http://localhost:81/WeatherForecast"
         }
         failure {
             echo "Deploy failed"
