@@ -2,7 +2,8 @@ pipeline {
     agent any
     environment {
         PROJECT_NAME = "WebApplication1"  
-        PUBLISH_DIR = "${WORKSPACE}\\publish"  
+        PUBLISH_DIR = "${WORKSPACE}\\publish"
+        WSL_DISTRO_NAME = "Ubuntu"
     }
 
     stages {
@@ -23,9 +24,9 @@ pipeline {
             steps {
                 bat """
                     # 先确保WSL启动
-                    wsl --distribution Ubuntu-22.04 --exec echo "WSL started"
+                    wsl --distribution ${WSL_DISTRO_NAME} --exec echo "WSL started"
                     # 执行Ansible剧本
-                    wsl ansible-playbook /mnt/c/ansible/deploy_iis.yml
+                    wsl --distribution ${WSL_DISTRO_NAME} ansible-playbook /mnt/c/ansible/deploy_iis.yml
                 """
             }
         }
